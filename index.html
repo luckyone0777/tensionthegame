@@ -104,16 +104,33 @@ var LZString=function(){var r=String.fromCharCode,o="ABCDEFGHIJKLMNOPQRSTUVWXYZa
 		<div id="init-lacking"><p>Browser lacks capabilities required to play.</p><p>Upgrade or switch to another browser.</p></div>
 		<div id="init-loading"><div>Loading&hellip;</div></div>
 	</div>
-	<tw-storydata name="Tension" startnode="1" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="4D3749DD-CEFC-4CEE-A01F-C74E1D36A2F4" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">
+	<tw-storydata name="Tension" startnode="1" creator="Twine" creator-version="2.10.0" format="SugarCube" format-version="2.37.3" ifid="4D3749DD-CEFC-4CEE-A01F-C74E1D36A2F4" options="" tags="" zoom="1" hidden><style role="stylesheet" id="twine-user-stylesheet" type="text/twine-css">@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+
+/* Start / Continue 按钮 */
+.main-button {
+    font-family: "Press Start 2P", "PixelFont", sans-serif;
+  font-size: 0.9rem !important;
+}
+
+#story {
+    position: fixed;
+    inset: 0;           /* top/right/bottom/left 全部 0 */
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
 html, body {
     margin: 0;
     padding: 0;
     height: 100%;
     background: #000;
+    overflow: hidden;  /* 不要滚动条 */
     font-family:
-        "Inter",               
-        -apple-system,         
-        BlinkMacSystemFont,    
+        "Inter",
+        -apple-system,
+        BlinkMacSystemFont,
         "Helvetica Neue",
         "Helvetica",
         "Arial",
@@ -121,165 +138,154 @@ html, body {
 }
 
 
-
-#story {
-    margin: 0;           
-    height: 100vh;       
-}
-
-/* Background */
+/* 背景图容器也完全填满 story */
 #passages {
-    position: relative;
-    width: 100vw;        
-    height: 100vh;       
-
-    max-width: none;     
-    margin: 0;           
+    position: absolute;  /* ★ 改成 absolute，配合 inset */
+    inset: 0;            /* ★ 直接顶满 */
+    max-width: none;
+    margin: 0;
 
     background-color: #000;
-    background-size: cover;          
-    background-position: center;     
+    background-size: cover;
+    background-position: center;
     background-repeat: no-repeat;
     overflow: hidden;
 }
 
-/* dialogue */
+
+
+
+
+
+/* 固定比例的对话框：高度始终是屏幕高度的 24% */
 .dialogue-box {
-    position: absolute;         
-    left: 50%;                  
-    bottom: 3vh;                
+    position: absolute;
+    left: 50%;
+    bottom: 6vh;                          /* 距离底部一点空间 */
     transform: translateX(-50%);
 
-    width: 80%;                
-    max-width: 980px;           
-    height: 220px;              
+    width: min(90vw, 1100px);             /* 宽度仍然随屏幕变化 */
+    height: 35vh;                         /* ★ 固定高度：占屏幕 24% */
 
-    padding: 40px 40px 40px;    
-    box-sizing: border-box;     
+    padding: 8vh 8vw 6vh; /*顶部距离*/
+    box-sizing: border-box;
 
-    background: rgba(255, 255, 255, 0.88); /* 半透明白 */
-    border-radius: 14px;        
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35); 
+    background: rgba(255, 255, 255, 0.88);
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
 
-    overflow-y: auto;          
-
-    z-index: 10;                
+    overflow-y: auto;                     /* ★ 内容多的时候内部滚动 */
+    z-index: 10;
 }
 
-/* Character */
+
+/* 人名/正文字号可以保持你现在那版（clamp 那段），不用再改 */
+
+
+/* 人物名称稍微随屏幕缩放 */
 .speaker-name {
     font-weight: 800;
-    font-size: 1.25rem;
-    color: #2c4a8a; 
-    margin-bottom: 0.4em;
+    font-size: clamp(1.4rem, 1.9vw, 2.1rem);  /* 小屏别太小，大屏会稍微变大 */
+    color: #2c4a8a;
+    margin-bottom: 1em;
 }
 
-/* text */
+/* 文本字号随屏幕缩放 */
 .dialogue-text {
-    font-size: 1rem;
+    font-size: clamp(1.15rem, 1.45vw, 1.6rem);
     line-height: 1.7;
-    color: #000000;    
+    color: #000000;
 }
 
-/* next arrow */
+/* 箭头也用相对字号 */
 .next-arrow {
     position: absolute;
-    right: 18px;
-    bottom: 10px;
-    font-size: 1.7rem;
+    right: 2vw;
+    bottom: 1vh;
+    font-size: clamp(1.4rem, 2vw, 2rem);
     cursor: pointer;
     user-select: none;
     color: #000;
 }
 
-/* choices */
+
+
+
+
+
+
+
+
+
+
+/* ===== 选项整体容器：保持你原来的居中位置 ===== */
 .choice-list {
     position: absolute;
-    top: 45%;
+    top: 35%;
     left: 50%;
     transform: translate(-50%, -50%);
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 18px;              /* 选项之间的间距，可以自己调 */
     align-items: center;
     z-index: 20;
 }
 
-/* choices buttom */
-.choice-button {
-    padding: 10px 22px;
-    font-size: 1rem;
-    border-radius: 999px;
+/* 每一项外层，只负责占位，不要背景、阴影之类 */
+.choice {
+    background: none;
     border: none;
-    background: rgba(0, 0, 0, 0.75);
-    color: #fff;
-    cursor: pointer;
-    min-width: 220px;
-    text-align: center;
-}
-
-.choice-button:hover {
-    background: rgba(0, 0, 0, 0.92);
-}
-
-/* Homepage */
-.title-screen {
-    position: absolute;
-    top: 80%;            
-    left: 50%;
-    transform: translate(-50%, -50%);
-    text-align: center;
-    color: #000;       
-    z-index: 10;
-}
-
-/* ===== Title ===== */
-.game-title {
-    position: absolute;
-    top: 10%;                 /* 主标题在中上区域 */
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 2.5rem;        /* 可以自己调大调小 */
-    font-weight: 900;
-    letter-spacing: 0.08em;
-    color: #ffffff;           /* 主标题白色 */
-    text-align: center;
+    box-shadow: none;
+    padding: 0;
     margin: 0;
 }
 
-/* ===== 章节副标题（章节导语） ===== */
-.game-sub {
-    position: absolute;
-    top: 50%;                 /* 副标题在正中间 */
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 1.2rem;        /* 可调 */
-    line-height: 1.6;
-    opacity: 1;               /* 100% 白色，不透明 */
-    color: #ffffff;           /* 副标题白色 */
-    text-align: center;
-    margin: 0;
-    width: 70%;               /* 为了换行更舒服，可以改 */
-}
+/* 真正的按钮样式：用 PNG 当背景 */
+.choice-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 
-/* ===== Start buttom ===== */
-.title-button {
-    display: inline-block;
-    padding: 12px 40px;
-    background: rgba(0,0,0,0.65);
-    border-radius: 12px;
-    font-size: 1.6rem;
+    width: 450px;   /* 按你的 PNG 比例调这两个数值 */
+    height: 90px;
+
+    padding: 0;     /* 不再用内边距撑开，用图片来决定大小 */
+    border: none;
+
+    background-color: transparent;
+    background-image: url("https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/buttom2.png");
+    background-size: 100% 100%;     /* 如果觉得被拉伸，可以改成 contain 看效果 */
+    background-repeat: no-repeat;
+    background-position: center;
+
+    font-size: 1.3rem;
     font-weight: 600;
-    color: white;
+    color: #000;
+    text-align: center;
+    text-decoration: none;
     cursor: pointer;
-    transition: 0.25s;
-    line-height: 1;           
+
+    transition: none;   /* 不要动画 */
 }
 
-.title-button:hover {
-    background: rgba(0,0,0,0.8);
-    transform: scale(1.05);
+/* hover 的时候保持完全一样（不要变白、不要消失） */
+.choice-button:hover {
+    background-image: url("https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/buttom2.png");
+    transform: none;
+    filter: none;
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 /* ===== 中央说明页布局 ===== */
@@ -289,10 +295,11 @@ html, body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;   /* ★ 不再垂直居中 */
+    padding-top: 22vh;     
     text-align: center;
     padding: 40px;
-    color: white;
+    color: #000;
     z-index: 20;
     pointer-events: auto;
 }
@@ -312,196 +319,214 @@ html, body {
     margin-bottom: 2.5rem;
 }
 
-/* Continue 按钮 */
-.intro-screen a {
+
+/* 统一按钮样式：Start / Continue 都可以用这个 */
+.main-button {
     display: inline-block;
-    padding: 10px 32px;
-    font-size: 1rem;
-    font-weight: 700;
-    background: rgba(255,255,255,0.12);
-    border-radius: 999px;
-    color: white;
-    text-decoration: none;
-    transition: 0.2s;
-}
+    width: 170px;                 /* ★ 按钮固定宽度：按你的 PNG 比例调整 */
+    height: 70px;                /* ★ 按钮固定高度 */
 
-.intro-screen a:hover {
-    background: rgba(255,255,255,0.22);
-    transform: translateY(-2px);
-}
+    background-image: url("https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/buttom1.png");
+    background-size: cover;       /* ★ 图片完整填充 */
+    background-repeat: no-repeat;
+    background-position: center;
 
+    border: none;
+    cursor: pointer;
 
-/* ===== 章节目录整体 ===== */
-.chapter-menu {
-    position: absolute;
-    inset: 0;
+    color: white;                 /* PNG 里已经有文字可忽略，如果你不需要文字就隐藏 */
+    font-size: 2rem;              /* 可调整，但通常 PNG 按钮不需要文字 */
+    font-weight: 800;
+
     display: flex;
+    align-items: center;
+    justify-content: center;
+
+    text-decoration: none;
+    pointer-events: auto;         /* 保证点击有效 */
+}
+
+
+.main-button:hover {
+     background-image: url("https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/buttom1.png");
+    background-size: cover;       /* ★ 图片完整填充 */
+    background-repeat: no-repeat;
+    background-position: center;
+
+    transform: none !important;    /* 不放大 */
+    opacity: 1 !important;       /* 不变亮 */
+}
+
+/* 首页按钮的布局：让按钮在画面「中偏下、居中」 */
+.title-screen {
+    position: absolute;
+    inset: 0;                        /* 占满整个可视区域 */
+    display: flex;
+    text-align: center;
     flex-direction: column;
     align-items: center;
-    padding-top: 40px;
-    color: #fff;
-    text-align: center;
+    justify-content: flex-end;       /* 垂直方向靠下 */
+    padding-bottom: 14vh;            /* 和底部的距离，自己可以调高/调低 */
+    pointer-events: none;            /* 不挡背景 */
+    z-index: 30;
+  color: #000; 
+  
 }
 
-.chapter-menu-title {
-    font-size: 2rem;
-    font-weight: 800;
-    margin-bottom: 1rem;
+
+
+
+
+/* 让容器里的按钮可以点击 */
+.title-screen .main-button {
+    pointer-events: auto;
 }
 
-.chapter-menu-sub {
-    font-size: 1rem;
-    opacity: 0.9;
-    margin-bottom: 2.5rem;
-}
 
-/* ===== 2×2 网格：永远对齐 ===== */
-.chapter-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 260px);
-    gap: 2rem;
-}
 
-/* ===== 卡片样式 ===== */
-.chapter-card {
-    background: rgba(0,0,0,0.6);
-    padding: 20px;
-    border-radius: 12px;
-    height: 120px;
-    box-sizing: border-box;
-    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    transition: 0.2s;
-}
 
-/* 链接包裹卡片 → 保证不破布局 */
-a .chapter-card:hover {
-    background: rgba(0,0,0,0.8);
-    transform: translateY(-4px);
-}
 
-/* 章节主标题 */
-.chapter-label-main {
-    font-size: 1.2rem;
-    font-weight: 700;
-    margin-bottom: 5px;
-}
 
-/* 章节副标题 */
-.chapter-label-sub {
-    font-size: 0.9rem;
-    opacity: 0.9;
-}
 
-/* 未解锁 */
-.chapter-card.locked {
-    background: rgba(255,255,255,0.15);
-    color: rgba(255,255,255,0.4);
-    box-shadow: none;
-}
 
-/* 通用立绘容器：固定 px 尺寸 & 位置体系 */
+
+
+
+
+
+
+/* 立绘 */
 .char-sprite {
     position: absolute;
     bottom: 0;
-    width: 350px;         /* 默认大小 */
-    height: 620px;
-    z-index: 5;
-    pointer-events: none;
-    image-rendering: pixelated;
+    z-index: 5;        /* 比对白框(10)小，就会在对白框后面 */
+    pointer-events: none;  /* 顺便避免挡住鼠标点击 */
 }
 
-/* 图片等比例铺满容器 */
+
 .char-sprite img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    image-rendering: pixelated;
+
+    height: auto;
+    width: auto;
 }
 
-/* 左右位置 */
-.char-left  { left: 140px; }
-.char-right { right: 140px; }
 
+.char-left {
+    left: 50%;
+    bottom: 18vh;              /* 往上抬一点 */
+    transform: translateX(-50%);
+}
 
-
-/* Astra 稍微小一点 */
+/* 控制位置（在 div 上） */
 .char-Astra_phone {
-    width: 80px;   /* 覆盖掉通用的 350px */
-    height: auto;  /* 可以一起调，按你图片比例来 */
-    bottom: 230px;
-    left: 340px
+    bottom: 42vh;   /* 想移动就改这里 */
 }
+
+/* 控制大小（在 img 上） */
+.char-Astra_phone img {
+    transform: scale(0.4);  
+    transform-origin: bottom center;
+}
+
 
 .char-Astra_earphone {
-    width: 50px;   /* 覆盖掉通用的 350px */
-    height: auto;  /* 可以一起调，按你图片比例来 */
-    bottom: 230px;
-    left: 340px
+    bottom: 42vh;   /* 想移动就改这里 */
 }
-/* Michael 高一点、大一点 */
+
+/* 控制大小（在 img 上） */
+.char-Astra_earphone img {
+    transform: scale(0.4);  
+    transform-origin: bottom center;
+}
+
+/* 控制位置（在 div 上） */
 .char-Michael_shirts_normal {
-    width: 380px;
-    height: 700px;
+    bottom: -20vh;   /* 想移动就改这里 */
 }
 
-.char-Michael_shirts_awkward {
-    width: 380px;
-    height: 700px;
-}
-
-
-.char-Michael_shirts_laugh {
-    width: 380px;
-    height: 700px;
+/* 控制大小（在 img 上） */
+.char-Michael_shirts_normal img {
+    transform: scale(0.5);  
+    transform-origin: bottom center;
 }
 
 
 
-/* You 再大一点 */
-.char-you_pajamas_normal {
-    width: 300px;
-    height: 600px;
+
+
+/* ★ NEW：隐藏整个顶部工具条 */
+#ui-bar {
+    display: none;
+}
+
+/* ★ 强制隐藏左侧 ui-bar，本身和小箭头都不要 */
+#ui-bar,
+#ui-bar-toggle {
+    display: none !important;
+}
+
+/* ★ 把 story 和 ui-overlay 从左侧 20em 的挤出状态拉回全屏 */
+#story,
+#ui-overlay {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 !important;
+}
+
+/* ★ 让 passages 也从左上角开始铺满 story */
+#passages {
+    position: absolute !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    margin: 0 !important;
 }
 
 
+/* 计分板整体位置：稍微靠上、靠左 */
+.scoreboard {
+    position: fixed;
+    top: 1.5vh;        /* ★ 往上移一点 */
+    left: 2.5vw;
+    z-index: 25;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;       /* 两个板子之间的距离 */
+    pointer-events: none;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #222;
+}
 
-.char-you_pajamas_normal:     {
-    width: 300px;
-    height: 600px;
-}
-.char-you_pajamas_angry:     {
-    width: 300px;
-    height: 600px;
-}
-.char-you_pajamas_thinking:     {
-    width: 300px;
-    height: 600px;
-}
-      
-.char-you_coat_normal:     {
-    width: 300px;
-    height: auto;
-}
-.char-you_coat_awkward:     {
-    width: 300px;
-    height: 600px;
-}
-.char-you_coat_awkward2:   {
-    width: 300px;
-    height: 600px;
-}
-.char-you_coat_scared:     {
-    width: 300px;
-    height: 600px;
-}
-     
+/* 每个 score：一行显示，半透明白底，小一点的胶囊 */
+.score-item {
+    display: inline-flex;                   /* ★ 让 label + value 一行排 */
+    align-items: center;
+    gap: 0.35rem;                           /* 名字和数字之间的距离 */
 
+    background: rgba(255, 255, 255, 0.75);  /* ★ 半透明白色 */
+    padding: 0.3rem 0.8rem;
+    border-radius: 999px;                   /* 圆角胶囊 */
+    box-shadow: 0 4px 8px rgba(0,0,0,0.18);
+}
 
+/* 标签文字（名称） */
+.score-label {
+    opacity: 0.8;
+}
 
-</style><script role="script" id="twine-user-script" type="text/twine-javascript">/* Background Pic*/
+/* 数字：加粗 + 蓝色 */
+.score-value {
+    font-weight: 800;
+    color: #2465ff;   /* ★ 分数用蓝色 */
+}
+</style><script role="script" id="twine-user-script" type="text/twine-javascript">window.setup = window.setup || {};
+
+/* Background Pic*/
 Macro.add('bg', {
     handler() {
         if (!this.args.length) return;
@@ -690,189 +715,177 @@ Macro.add('choices', {
 
 
 
-/* ================== portrait ================== */
-(function () {
-    /* 1. link */
-    setup.charSprites = {
-        Astra_phone:   "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/phone.PNG",
-       Astra_earphone:   "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/earphone.PNG",
-      
-        Michael_shirts_normal: "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/Michael_shirts_normal.PNG",
-      Michael_shirts_laugh: "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/Michael_shirts_laugh.PNG",
-      Michael_shirts_awkward: "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/Michael_shirts_awkward.PNG",
-      
-      
-        you_pajamas_normal:     "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_pajamas_normal.PNG",
-       you_pajamas_angry:     "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_pajamas_angry.PNG" ,
-      you_pajamas_thinking:     "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_pajamas_thinking.PNG",
-      
-      you_coat_normal:     "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_normal.png",
-      you_coat_awkward:     "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_awkward.PNG",
-      you_coat_awkward2:   "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_awkward2.PNG",
-      you_coat_scared:     "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_scared.PNG",
-      
-      you_hoodie_normal:
-"https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_hoodie_normal.PNG",
-      
-      
-    };
+/* 先确保 setup 存在（SugarCube 本身也会建，但加一层保险没坏处） */
+window.setup = window.setup || {};
 
-    /* function */
-    function getCharSlot(id, extraClass) {
-        let $el = $("#" + id);
-        if ($el.length === 0) {
-            $el = $("<div></div>")
-                .attr("id", id)
-                .addClass("char-sprite " + extraClass);
-            $("#story").append($el); 
-        }
-        return $el;
+/* ============ 立绘链接表 ============ */
+setup.charSprites = {
+    Astra_phone:   "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/phone.PNG",
+    Astra_earphone:   "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/earphone.PNG",
+
+    Michael_shirts_normal: "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/Michael_shirts_normal.PNG",
+    Michael_shirts_laugh: "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/Michael_shirts_laugh.PNG",
+    Michael_shirts_awkward: "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/Michael_shirts_awkward.PNG",
+
+    you_pajamas_normal:     "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_pajamas_normal.PNG",
+    you_pajamas_angry:      "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_pajamas_angry.PNG" ,
+    you_pajamas_thinking:   "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_pajamas_thinking.PNG",
+
+    you_coat_normal:        "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_normal.png",
+    you_coat_awkward:       "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_awkward.PNG",
+    you_coat_awkward2:      "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_awkward2.PNG",
+    you_coat_scared:        "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_coat_scared.PNG",
+
+    you_hoodie_normal:
+    "https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/you_hoodie_normal.PNG",
+};
+
+/* ============ 内部工具：获取 / 创建立绘容器 ============ */
+
+function getCharSlot(id, extraClass) {
+    var $el = $("#" + id);
+
+    if ($el.length === 0) {
+        $el = $("<div></div>")
+            .attr("id", id)
+            .addClass("char-sprite " + extraClass);
+
+        // 挂在 #story 底下（你已经把 #story 设成全屏容器了）
+        $("#story").append($el);
+        console.log("[char] create slot:", id);
     }
 
-    /* common function */
-    function showChar(side, name) {
-        const id  = side === "left" ? "char-left"  : "char-right";
-        const cls = side === "left" ? "char-left"  : "char-right";
-        const $slot = getCharSlot(id, cls);
+    return $el;
+}
 
-        if (!name || name.toLowerCase() === "none") {
-            $slot.hide();
-            return;
-        }
+/* ============ 通用显示函数 ============ */
+function showChar(side, name) {
+    var id  = (side === "left") ? "char-left"  : "char-right";
+    var cls = (side === "left") ? "char-left"  : "char-right";
+    var $slot = getCharSlot(id, cls);
 
-        const url = setup.charSprites[name];
-        if (!url) {
-            console.warn("Unknown char name:", name);
-            $slot.hide();
-            return;
-        }
-
-        // 
-        const $img = $("<img>")
-            .attr("src", url)
-            .attr("alt", name);
-
-        $slot
-            .removeClass("char-Astra char-Michael char-You")  // 清除旧的
-            .addClass("char-" + name);                        // 加新的
-        $slot.empty().append($img).show();
-    }
-
-    /* left：Astra / Michael */
-    Macro.add("leftChar", {
-        handler() {
-            const name = this.args[0] || "none";
-            showChar("left", name);
-        }
-    });
-
-    /* right：You */
-    Macro.add("rightChar", {
-        handler() {
-            const name = this.args[0] || "none";
-            showChar("right", name);
-        }
-    });
-})();
-
-
-
-/* ================================
-   点击对白框任意位置 = 点击箭头
-   ================================ */
-$(document).on("click", ".dialogue-box", function (ev) {
-    // 1. 如果点到的是箭头本身，就让箭头自己处理，不额外再触发一次
-    if ($(ev.target).closest(".dialogue-next").length) {
+    if (!name || String(name).toLowerCase() === "none") {
+        $slot.hide();
         return;
     }
 
-    // 2. 如果点到的是选项按钮 / 链接，也不要跳到下一句（避免和选项冲突）
-    if ($(ev.target).closest(".choice-button, .chapter-button, a").length) {
+    var url = setup.charSprites[name];
+
+    if (!url) {
+        console.warn("[char] unknown sprite:", name);
+        $slot.hide();
         return;
     }
 
-    // 3. 找到这个对白框里的箭头，主动触发它的 click
-    const $next = $(this).find(".dialogue-next").first();
-    if ($next.length) {
-        $next.trigger("click");
+    var lastName = $slot.data("charName");
+    if (lastName === name) {
+        $slot.show();
+        return;
+    }
+    $slot.data("charName", name);
+
+    var $img = $("<img>")
+        .attr("src", url)
+        .attr("alt", name);
+
+    /* 🔴 只移除“上一张立绘”的类，不碰基础布局类 */
+    var lastNameClass = $slot.data("charNameClass");
+    if (lastNameClass) {
+        $slot.removeClass(lastNameClass);
+    }
+
+    var newClass = "char-" + name;
+    $slot.addClass(newClass);
+    $slot.data("charNameClass", newClass);
+
+    $slot.empty().append($img).show();
+}
+
+
+/* ============ 提供给 Twine 用的宏 ============ */
+
+Macro.add("leftChar", {
+    handler : function () {
+        var name = this.args[0] || "none";
+        console.log("[char] leftChar called with:", name);
+        showChar("left", name);
     }
 });
-</script><tw-passagedata pid="1" name="Start" tags="" position="625,100" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/HomePage.png&quot;&gt;&gt;
+
+/* 可选：清除立绘 */
+Macro.add("clearChar", {
+    handler : function () {
+        $("#char-left, #char-right").remove();
+        console.log("[char] cleared");
+    }
+});
+
+
+
+
+
+
+</script><tw-tag name="story" color="red"></tw-tag><tw-passagedata pid="1" name="Start" tags="" position="625,50" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/background2.png&quot;&gt;&gt;
 
 &lt;div class=&quot;title-screen&quot;&gt;
- 
-    &lt;div class=&quot;title-button&quot;&gt;
-        &lt;&lt;link &quot;Start&quot;&gt;&gt;
-            &lt;&lt;goto &quot;Menu&quot;&gt;&gt;
-        &lt;&lt;/link&gt;&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
+    &lt;a class=&quot;main-button&quot; data-passage=&quot;Menu&quot;&gt;Start&lt;/a&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="2" name="Act1_1_2" tags="story" position="625,275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom.png&quot;&gt;&gt;
 
-
-
-
-</tw-passagedata><tw-passagedata pid="2" name="Act1_1_2" tags="" position="625,275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px;&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
-
 
 &lt;&lt;dialogue &quot;Astra&quot;
-    &quot;“Morning. Your sleep duration: 05:37:45, slightly below average.&lt;br&gt;Today’s temperature will range from 56°F to 79°F.”&quot;
-    &quot;“Today&#39;s schedule: your second date with Michael. &lt;br&gt;Breakfast and outfit have both been prepared.”&quot;&quot;-&gt;Act1_1_3&quot;&gt;&gt;
+    &quot;Morning. Your sleep duration: 05:37:45, slightly below average.&lt;br&gt;Today’s temperature will range from 56°F to 79°F.&quot;
+    &quot;Today&#39;s schedule: your second date with Michael.&lt;br&gt;Breakfast and outfit have both been prepared.&quot;
+    &quot;-&gt;Act1_1_3&quot;&gt;&gt;
 
 
 
 
-
-</tw-passagedata><tw-passagedata pid="3" name="Act1_1_3" tags="" position="625,375" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="3" name="Act1_1_3" tags="story" position="625,375" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_pajamas_thinking&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-50px&quot;
-})&gt;&gt;
 
 
-&lt;&lt;dialogue &quot;You&quot;
+
+&lt;&lt;dialogue $playerName
     &quot;(That’s Astra, my personal AI.&lt;br&gt;It runs my schedule, my meals, my mood… pretty much everything.)&quot;
-    &quot;(And Machel?&lt;br&gt;Yeah… he’s the guy Astra picked for me. Big-data soulmate?...whatever.&lt;br&gt; We met last week and, fine, Astra wasn’t wrong. I did like him.)&quot;
-    &quot;-&gt;Act1_1_3_1&quot;&gt;&gt;
+    &quot;(And Machel?Yeah… he’s the guy Astra picked for me. Big-data soulmate?...whatever.&lt;br&gt; We met last week and, fine, Astra wasn’t wrong. I did like him.)&quot;
+    &quot;(But watching all of this…Astra might be running a little too much of my life?)&quot;
+    &quot;“…So I don’t even get to decide whether I’m hungry anymore?!”&quot;
+    &quot;-&gt;Act1_1_4&quot;&gt;&gt;
 </tw-passagedata><tw-passagedata pid="4" name="StoryInit" tags="" position="375,175" size="100,100">&lt;&lt;set $attraction = 50&gt;&gt;
 &lt;&lt;set $AIdep = 50&gt;&gt;
-
+&lt;&lt;set $playerName = &quot;&quot;&gt;&gt;
 
 
 &lt;&lt;set $maxChapterUnlocked = 1&gt;&gt;
-</tw-passagedata><tw-passagedata pid="5" name="Act1_1_5" tags="" position="625,575" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="5" name="Act1_1_5" tags="story" position="625,575" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
-    &quot;The closet slides open. A soft-toned jacket forms on your reflection without you touching anything.&quot;&quot;-&gt;Act1_1_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="6" name="Act1_1_6" tags="" position="625,650" size="100,100">
+    &quot;The closet slides open. A soft-toned jacket forms on your reflection without you touching anything.&quot;&quot;-&gt;Act1_1_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="6" name="Act1_1_6" tags="story" position="625,650" size="100,100">
 &lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Astra&quot;
-    &quot;“Based on his preference model, this color increases comfort by 23%.”&quot;&quot;-&gt;Act1_choice1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="7" name="Act1_1_4" tags="" position="625,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+    &quot;“Based on his preference model, this color increases comfort by 23%.”&quot;&quot;-&gt;Act1_choice1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="7" name="Act1_1_4" tags="story" position="625,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;“Your blood sugar dropped a bit earlier. &lt;br&gt;So I made you toast and light coffee to balance things out.”&quot;
     &quot;-&gt;Act1_1_4_1&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="8" name="Act1_choice1" tags="" position="625,750" size="100,100">
+</tw-passagedata><tw-passagedata pid="8" name="Act1_choice1" tags="story" position="625,750" size="100,100">
 &lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;Who will decide your outfit?&quot;&gt;&gt;
@@ -882,69 +895,54 @@ $(document).on("click", ".dialogue-box", function (ev) {
     &quot;Keep the outfit, but add your scarf or rings.&quot; 10 0 &quot;Act1_choice1_B&quot;
     &quot;Switch to the jacket you actually like.&quot; 10 -10 &quot;Act1_choice1_C&quot;
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="9" name="Act1_choice1_A" tags="" position="725,725" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="9" name="Act1_choice1_A" tags="story" position="725,725" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_pajamas_thinking&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-50px&quot;
-})&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
 &quot;【Attraction -10】【AI Dependence +10】&quot;
     &quot;You just nod.&lt;br&gt;The clothes roll out smoothly.&quot;
  &quot;-&gt;Act1_1_7&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="10" name="StoryCaption" tags="" position="375,275" size="100,100">Attraction: $attraction
 AI Dependence: $AIdep
-</tw-passagedata><tw-passagedata pid="11" name="Act1_choice1_B" tags="" position="725,775" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+
+
+</tw-passagedata><tw-passagedata pid="11" name="Act1_choice1_B" tags="story" position="725,775" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
 &quot;【Attraction +10】【AI Dependence 0】&quot;
     &quot;Astra pauses briefly but doesn’t say anything.&quot;
- &quot;-&gt;Act1_1_7&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="12" name="Act1_choice1_C" tags="" position="725,825" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+ &quot;-&gt;Act1_1_7&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="12" name="Act1_choice1_C" tags="story" position="725,825" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_pajamas_thinking&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-50px&quot;
-})&gt;&gt;
+
 
 
 &lt;&lt;dialogue &quot;&quot;
 &quot;【Attraction +10】【AI Dependence -10】&quot;
  &quot;-&gt;Act1_choice1_C_1&quot;&gt;&gt;
- </tw-passagedata><tw-passagedata pid="13" name="Act1_2_1" tags="" position="800,175" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+ </tw-passagedata><tw-passagedata pid="13" name="Act1_2_1" tags="story" position="800,175" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; &quot;You arrive at the restaurant first.&lt;br&gt;Wind brushes across the water. Your hands feel a little cold.&quot;
 &quot;You adjust your earbuds. The new smart pair still rubs a little.&lt;br&gt;Once you step outside, Astra shifts to headset mode or pops up in your AR lenses. &lt;br&gt;Nobody really goes out alone anymore. Your AI is always right there with you.&quot;
-&quot;-&gt;Act1_2_2&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="14" name="Act1_2_2" tags="" position="800,275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+&quot;-&gt;Act1_2_2&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="14" name="Act1_2_2" tags="story" position="800,275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
- bottom: &quot;-80px&quot;
-})&gt;&gt;
 
-
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 
 &lt;&lt;dialogue &quot;Michael&quot;
     &quot;“Hey.”&quot;&quot;-&gt;Act1_2_3&quot;&gt;&gt;
 
-</tw-passagedata><tw-passagedata pid="15" name="Act1_2_5" tags="" position="800,575" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="15" name="Act1_2_5" tags="story" position="800,575" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;You&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;How do you respond?&quot;&gt;&gt;
@@ -953,118 +951,82 @@ AI Dependence: $AIdep
     &quot;(Follow Astra) “You look really good today.”&quot; 10 10 &quot;Act1_choice2_B_1&quot;
      &quot;“Yeah. I already ordered coffee. What about you?”&quot; -10 -10 &quot;Act1_choice2_D_1&quot;
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="16" name="Act1_2_4" tags="" position="800,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="16" name="Act1_2_4" tags="story" position="800,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Michael_shirts_laugh&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+&lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Michael&quot;
-    &quot;(Sit down)“How&#39;s everything going? You got here pretty early.”&quot;&quot;-&gt;Act1_2_4_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="17" name="Act1_2_3" tags="" position="800,375" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+    &quot;(Sit down)“How&#39;s everything going? You got here pretty early.”&quot;&quot;-&gt;Act1_2_4_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="17" name="Act1_2_3" tags="story" position="800,375" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_scared&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot;(Ah—! Dude, warn me next time.)&quot;
     &quot;“Uh, hi.”&quot;&quot;-&gt;Act1_2_4&quot;&gt;&gt;
 
 
-</tw-passagedata><tw-passagedata pid="18" name="Act1_choice2_B_1" tags="" position="900,525" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="18" name="Act1_choice2_B_1" tags="story" position="900,525" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +10】【AI Dependence +10】&quot;
-&quot;-&gt;Act1_choice2_B&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="19" name="Act1_choice2_D_1" tags="" position="900,725" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+&quot;-&gt;Act1_choice2_B&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="19" name="Act1_choice2_D_1" tags="story" position="900,725" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Michael&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
+
 
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction -10】【AI Dependence -10】&quot;
-&quot;-&gt;Act1_choice2_D&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="20" name="Act1_choice2_B" tags="" position="900,625" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
-
-&lt;&lt;leftChar &quot;Michael_shirts_laugh&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
-
-
-&lt;&lt;dialogue &quot;Michael&quot; &quot;(ears turn a little pink)“Uh… thanks.”&quot;
-&quot;-&gt;Act1_2_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="21" name="Act1_choice2_D" tags="" position="900,825" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+&quot;-&gt;Act1_choice2_D&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="20" name="Act1_choice2_B" tags="story" position="900,625" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-80px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
+&lt;&lt;dialogue &quot;Michael&quot; &quot;(ears turn a little pink)“Uh… thanks.”&quot;
+&quot;-&gt;Act1_2_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="21" name="Act1_choice2_D" tags="story" position="900,825" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+
+&lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
+
 
 
 &lt;&lt;dialogue &quot;Michael&quot; &quot;(stands)“I’ll… go take a look.”&quot;
 &quot;-&gt;Act1_2_6&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="22" name="Act1_2_6" tags="" position="800,900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="22" name="Act1_2_6" tags="story" position="800,900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Michael_shirts_awkward&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_awkward&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+&lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;The coffee arrives. Steam drifts upward between you.&quot;&quot;-&gt;Act1_2_7&quot;&gt;&gt;
 
-</tw-passagedata><tw-passagedata pid="23" name="Act1_2_7" tags="" position="800,1000" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="23" name="Act1_2_7" tags="story" position="800,1000" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Michael_shirts_awkward&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+&lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Michael&quot;
     &quot;“......”&quot;&quot;-&gt;Act1_2_8&quot;&gt;&gt;
 
-</tw-passagedata><tw-passagedata pid="24" name="Act1_2_14" tags="" position="800,1700" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="24" name="Act1_2_14" tags="story" position="800,1700" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_awkward2&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot;(quiet to Astra) “Was that dumb?”&quot;&quot;-&gt;Act1_2_15&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="25" name="Act1_2_10" tags="" position="800,1300" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="25" name="Act1_2_10" tags="story" position="800,1300" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Astra&quot;&gt;&gt;
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
 
-&lt;&lt;rightChar &quot;you_coat_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
 
 &lt;&lt;dialogue &quot;You&quot;
-    &quot;(Follow Astra)“Have you been shooting street scenes lately? &lt;br&gt;You mentioned wanting to capture old warehouses in fall?”&quot;&quot;-&gt;Act1_2_11&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="26" name="Act1_2_11" tags="" position="800,1400" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+    &quot;(Follow Astra)“Have you been shooting street scenes lately? &lt;br&gt;You mentioned wanting to capture old warehouses in fall?”&quot;&quot;-&gt;Act1_2_11&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="26" name="Act1_2_11" tags="story" position="800,1400" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-width:&quot;380px&quot;,
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;Michael&quot;
     &quot;“Oh, yeah. I’m working on some old sites. Messy, but really honest.”&quot;&quot;-&gt;Act1_2_12&quot;&gt;&gt;
@@ -1075,37 +1037,27 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Michael&quot;
     &quot;......&quot;&quot;-&gt;Act1_2_8&quot;&gt;&gt;
 
-</tw-passagedata><tw-passagedata pid="28" name="Act1_2_12" tags="" position="800,1500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="28" name="Act1_2_12" tags="story" position="800,1500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_awkward&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot;“So you… like, uh… crumbling-city vibes?”&quot;&quot;-&gt;Act1_2_13&quot;&gt;&gt;
 
-</tw-passagedata><tw-passagedata pid="29" name="Act1_2_8" tags="" position="800,1100" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="29" name="Act1_2_8" tags="story" position="800,1100" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_awkward&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot;“......”&quot;&quot;-&gt;Act1_2_9&quot;&gt;&gt;
 
-</tw-passagedata><tw-passagedata pid="30" name="Act1_2_9" tags="" position="800,1200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="30" name="Act1_2_9" tags="story" position="800,1200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_earphone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    width: &quot;50px&quot;
-})&gt;&gt;
 
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 
 &lt;&lt;dialogue &quot;Astra&quot;
@@ -1115,57 +1067,41 @@ width:&quot;380px&quot;,
  &lt;&lt;choices
     &quot;Follow Astra&quot; 0 10 &quot;Act1_2_9_1&quot;
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="31" name="Act1_2_13" tags="" position="800,1600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="31" name="Act1_2_13" tags="story" position="800,1600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;You immediately regret the words.&quot;&quot;-&gt;Act1_2_14&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="32" name="Act1_2_15" tags="" position="800,1800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="32" name="Act1_2_15" tags="story" position="800,1800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_earphone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;“Revised version: I’m curious, why do the cities in your photos feel so emotional?”&quot;&quot;-&gt;Act1_2_16&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="33" name="Act1_2_18" tags="" position="800,2100" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="33" name="Act1_2_18" tags="story" position="800,2100" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;…Okay great. AI: 1. Actual you: 0.&quot;&quot;-&gt;Act1_2_19&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="34" name="Act1_2_17" tags="" position="800,2000" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="34" name="Act1_2_17" tags="story" position="800,2000" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Michael_shirts_laugh&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;,
-    width: &quot;380px&quot;
-})&gt;&gt;
-
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+&lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;Michael&quot;
     &quot;“Wow. I LOVE that question.”&quot;&quot;-&gt;Act1_2_18&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="35" name="Act1_2_16" tags="" position="800,1900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="35" name="Act1_2_16" tags="story" position="800,1900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Astra_earphone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot;“Right, uh&lt;br&gt;I mean, why do the cities in your photos feel so…emotional?”&quot;&quot;-&gt;Act1_2_17&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="36" name="Act1_2_19" tags="" position="800,2200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="36" name="Act1_2_19" tags="story" position="800,2200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;Continue using AI-crafted lines?&quot;&gt;&gt;
@@ -1177,25 +1113,21 @@ width:&quot;380px&quot;,
     &quot;Turn off dialogue optimization.&quot; 10 -10 &quot;Act1_choice3_C_1&quot;
      
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="37" name="Act1_2_22" tags="" position="800,2500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="37" name="Act1_2_22" tags="story" position="800,2500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_awkward2&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot; (Oh god…My AI is literally helping us flirt.)&quot;&quot;-&gt;Act1_2_23&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="38" name="Act1_2_20" tags="" position="800,2300" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="38" name="Act1_2_20" tags="story" position="800,2300" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;The music shifts into warmer, more intimate Lo-Fi.&lt;br&gt;A soft current of warm air rises near your shoulders.&quot;&quot;-&gt;Act1_2_21&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="39" name="Act1_2_23" tags="" position="800,2600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="39" name="Act1_2_23" tags="story" position="800,2600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;You&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;How do you feel about Astra’s flirting assist?&quot;&gt;&gt;
@@ -1205,75 +1137,52 @@ width:&quot;380px&quot;,
     &quot;A little weird, but whatever.&quot; 10 5 &quot;Act1_choice4_B&quot;
      &quot;“Astra… seriously? Too much.”&quot; -10 -10 &quot;Act1_choice4_D_1&quot;  
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="40" name="Act1_choice3_A" tags="" position="900,2150" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="40" name="Act1_choice3_A" tags="story" position="900,2150" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Michael&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;You&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;The conversation flows perfectly… almost too perfectly.&quot;&quot;-&gt;Act1_2_20&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="41" name="Act1_3_1" tags="" position="1000,175" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="41" name="Act1_3_1" tags="story" position="1000,175" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;The date goes smoother than expected.&lt;br&gt;Maybe because he’s cute.&lt;br&gt;......Or maybe because Astra is working very, very hard.&quot;&quot;-&gt;Act1_3_2&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="42" name="Act1_choice3_A_1" tags="" position="900,2050" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="42" name="Act1_choice3_A_1" tags="story" position="900,2050" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction -10】【AI Dependence +10】&quot;
-&quot;-&gt;Act1_choice3_A&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="43" name="Act1_2_21" tags="" position="800,2400" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+&quot;-&gt;Act1_choice3_A&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="43" name="Act1_2_21" tags="story" position="800,2400" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_earphone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;“Date atmosphere optimized.&lt;br&gt;I requested a comfort adjustment through the restaurant’s smart-environment system, and they approved the change.”&quot;&quot;-&gt;Act1_2_22&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="44" name="Act1_3_2" tags="" position="1000,250" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="44" name="Act1_3_2" tags="story" position="1000,250" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px;&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;“Your mood just went up. &lt;br&gt;Should I plan for a third date?”&quot;&quot;-&gt;Act1_3_3&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="45" name="Act1_choice3_C" tags="" position="900,2275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="45" name="Act1_choice3_C" tags="story" position="900,2275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;,
-    width: &quot;380px&quot;
 
-})&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;The air shifts. More real. More terrifying.&quot;&quot;-&gt;Act1_2_20&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="46" name="Act1_choice4_D" tags="" position="900,2600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="46" name="Act1_choice4_D" tags="story" position="900,2600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_earphone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px;&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;I&#39;m sorry. My goal is to help you have the best experience.&quot;&quot;-&gt;Act1_3_1&quot;&gt;&gt;
@@ -1285,202 +1194,163 @@ width:&quot;380px&quot;,
 
 
 
-</tw-passagedata><tw-passagedata pid="48" name="Act1_3_3" tags="" position="1000,350" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="48" name="Act1_3_3" tags="story" position="1000,350" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_pajamas_thinking&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-80px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot;(My heart did speed up.....My smile was real.)&quot;
     &quot;“…Do I like him? Or did you help me like him?”&quot;&quot;-&gt;Act1_3_4&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="49" name="Act1_3_5" tags="" position="1000,500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="49" name="Act1_3_5" tags="story" position="1000,500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
+
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;How do you feel about today?&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;You&quot;&gt;&gt;
 
-    
 &lt;&lt;choices
     &quot;“I do like him.”&quot; 10 10 &quot;Act1_choice5_A&quot;
     &quot;“I… can’t quite tell.”&quot; 5 5 &quot;Act1_choice5_B&quot;
     &quot;“You influenced too much.”&quot; 0 -10 &quot;Act1_choice5_C&quot;
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="50" name="Act1_3_4" tags="" position="1000,425" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="50" name="Act1_3_4" tags="story" position="1000,425" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px;&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;“I cannot answer that. Your feelings belong to you.”&quot;&quot;-&gt;Act1_3_5&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="51" name="Act1_3_6" tags="" position="1000,600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="51" name="Act1_3_6" tags="story" position="1000,600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px;&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;“Should I arrange the next meeting?”&quot;&quot;-&gt;Act1_3_7&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="52" name="Act1_3_8" tags="" position="1000,800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="52" name="Act1_3_8" tags="story" position="1000,800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-   width: &quot;50px;&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;“Logged. I’ll proceed exactly as you prefer.”&quot;&quot;-&gt;Act1_3_9&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="53" name="Act1_3_7" tags="" position="1000,700" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="53" name="Act1_3_7" tags="story" position="1000,700" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
+
+&lt;&lt;leftChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;Who decides the next date?&quot;&gt;&gt;
 
-&lt;&lt;leftChar &quot;Astra&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you&quot;&gt;&gt;
+
+
 
 &lt;&lt;choices
     &quot;“You handle it.”&quot; 0 10 &quot;Act1_choice6_A&quot;
     &quot;“Give suggestions, but don’t control things.”&quot; 0 5 &quot;Act1_choice6_B&quot;
      &quot;“Stay out of the next one.”&quot; 0 -10 &quot;Act1_choice6_C&quot;
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="54" name="Act1_1_1" tags="" position="625,175" size="100,100">
-&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="54" name="Act1_1_1" tags="story" position="625,175" size="100,100">
+&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+&lt;&lt;dialogue &quot;&quot; &quot;The alarm rings softly. A familiar rose scent lingers in the air.&lt;br&gt;Breakfast’s ready, and your smart lamps light up.&quot;&quot;-&gt;Act1_1_2&quot;&gt;&gt;
 
-&lt;&lt;dialogue &quot;&quot; &quot;The alarm rings softly. A familiar rose scent lingers in the air.&lt;br&gt;Breakfast’s ready, and your smart lamps light up.&quot;
-&quot;-&gt;Act1_1_2&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="55" name="Act1_start" tags="" position="700,150" size="100,100">
+</tw-passagedata><tw-passagedata pid="55" name="Act1_start" tags="story" position="625,125" size="100,100">
 &lt;&lt;bg &quot;&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot; 
-
-&quot;People say we live in an age where AI makes everything easier.&lt;br&gt;Maybe that’s true.&lt;br&gt;But sometimes I wonder…&lt;br&gt;if convenience slowly replaced the part of me that used to make choices.&lt;br&gt;&lt;br&gt;Oct 14 2040&quot;
+&quot;People say we live in an age where AI makes everything easier.&lt;br&gt;Maybe that’s true.But sometimes I wonder…&lt;br&gt;if convenience slowly replaced the part of me that used to make choices.&lt;br&gt;———$playerName        Oct 14 2040&quot;
 &quot;-&gt;Act1_1_1&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="56" name="Act1_1_4_1" tags="" position="725,525" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="56" name="Act1_1_4_1" tags="story" position="725,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_pajamas_thinking&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;You&quot;
     &quot;“......You&#39;re right.”&quot;
-    &quot;-&gt;Act1_1_5&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="57" name="Act1_1_7" tags="" position="625,850" size="100,100">
+    &quot;-&gt;Act1_1_5&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="57" name="Act1_1_7" tags="story" position="625,850" size="100,100">
 &lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 
 &lt;&lt;dialogue &quot;Astra&quot;
-    &quot;“Departure is recommended now. &lt;br&gt;Transit time is 18 minutes.&lt;br&gt;I’ve set the fastest route to your phone.”&quot;&quot;-&gt;Act1_2_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="58" name="Act1_2_4_1" tags="" position="900,450" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+    &quot;“Departure is recommended now. &lt;br&gt;Transit time is 18 minutes.&lt;br&gt;I’ve set the fastest route to your phone.”&quot;&quot;-&gt;Act1_2_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="58" name="Act1_2_4_1" tags="story" position="900,450" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Michael_shirts_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-left&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
-&lt;&lt;rightChar &quot;you_coat_awkward&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-150px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;You&quot;
-    &quot;(That’s Michael, the one Astra matched me with.&lt;br&gt;It’s already our second meeting… so why am I still this awkward?)&quot;&quot;-&gt;Act1_2_5&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="59" name="Act1_3_9" tags="" position="1000,900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+    &quot;(That’s Michael, the one Astra matched me with.&lt;br&gt;It’s already our second meeting… so why am I still this awkward?)&quot;&quot;-&gt;Act1_2_5&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="59" name="Act1_3_9" tags="story" position="1000,900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_pajamas_normal&quot;&gt;&gt;
-&lt;&lt;run $(&quot;#char-right&quot;).css({
-    bottom: &quot;-80px&quot;
-})&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;Right before the interface shuts off, a tiny line of text flickers, too quick to catch.&lt;br&gt;Still, you feel it:&lt;br&gt;Something in the background is learning you, smoothing your next step without asking.&quot;
     &quot;Convenience is creeping in, quietly. &lt;br&gt;Things happens for you, even when you never hit CONFIRM.&quot;
     &quot;【Chapter I End】&quot;&gt;&gt;
     
-    
-/* 第 1 章结尾 */
-&lt;&lt;set $maxChapterUnlocked = Math.max($maxChapterUnlocked, 2)&gt;&gt;
 
 
 
 
-</tw-passagedata><tw-passagedata pid="60" name="Act1_1_3_1" tags="" position="725,400" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="60" name="Act1_2_9_1" tags="story" position="900,1225" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;you_pajamas_angry&quot;&gt;&gt;
-
-&lt;&lt;dialogue &quot;You&quot;
-    &quot;(But watching all of this…Astra might be running a little too much of my life?)&quot;
-    &quot;“…So I don’t even get to decide whether I’m hungry anymore?!”&quot;
-    &quot;-&gt;Act1_1_4&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="61" name="Act1_2_9_1" tags="" position="900,1225" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
-
-&lt;&lt;leftChar &quot;Astra&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 
 &lt;&lt;dialogue &quot;&quot;
   &quot;【Attraction +0】【AI Dependence +10】&quot;
   &quot;-&gt;Act1_2_10&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="62" name="Act1_choice3_C_1" tags="" position="900,2225" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="61" name="Act1_choice3_C_1" tags="story" position="900,2225" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +10】【AI Dependence -10】&quot;
-&quot;-&gt;Act1_choice3_C&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="63" name="Act1_choice4_A" tags="" position="900,2500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+&quot;-&gt;Act1_choice3_C&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="62" name="Act1_choice4_A" tags="story" position="900,2500" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction 10】【AI Dependence 10】&quot;
-&quot;-&gt;Act1_3_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="64" name="Act1_choice4_B" tags="" position="900,2525" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+&quot;-&gt;Act1_3_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="63" name="Act1_choice4_B" tags="story" position="900,2525" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +10】【AI Dependence +5】&quot;
-&quot;-&gt;Act1_3_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="65" name="Act1_choice5_B" tags="" position="1100,550" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+&quot;-&gt;Act1_3_1&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="64" name="Act1_choice5_B" tags="story" position="1100,550" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +5】【AI Dependence +5】&quot;
-&quot;-&gt;Act1_3_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="66" name="Act1_choice4_D_1" tags="" position="900,2550" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
+&quot;-&gt;Act1_3_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="65" name="Act1_choice4_D_1" tags="story" position="900,2550" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside_restaurant.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction -10】【AI Dependence -10】&quot;
-&quot;-&gt;Act1_choice4_D&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="67" name="Act1_choice5_A" tags="" position="1100,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+&quot;-&gt;Act1_choice4_D&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="66" name="Act1_choice5_A" tags="story" position="1100,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +10】【AI Dependence +10】&quot;
-&quot;-&gt;Act1_3_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="68" name="Act2_1_1" tags="" position="1325,200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+&quot;-&gt;Act1_3_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="67" name="Act2_1_1" tags="" position="1325,200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
 &lt;&lt;rightChar &quot;&quot;&gt;&gt;
@@ -1488,52 +1358,47 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;&quot;
 &quot;The alarm rings.&lt;br&gt;The same scent lingers.&quot;
 &quot;-&gt;Act1_1_2&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="69" name="Act1_choice5_C" tags="" position="1100,600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="68" name="Act1_choice5_C" tags="story" position="1100,600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction -10】【AI Dependence -10】&quot;
-&quot;-&gt;Act1_3_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="70" name="Act1_choice6_A" tags="" position="1100,700" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+&quot;-&gt;Act1_3_6&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="69" name="Act1_choice6_A" tags="story" position="1100,700" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +0】【AI Dependence +10】&quot;
-&quot;-&gt;Act1_3_8&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="71" name="Act1_choice6_C" tags="" position="1100,800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+&quot;-&gt;Act1_3_8&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="70" name="Act1_choice6_C" tags="story" position="1100,800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +0】【AI Dependence -10】&quot;
-&quot;-&gt;Act1_3_8&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="72" name="Act1_choice6_B" tags="" position="1100,750" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed_night.png&quot;&gt;&gt;
+&quot;-&gt;Act1_3_8&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="71" name="Act1_choice6_B" tags="story" position="1100,750" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_night.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
+
 
 &lt;&lt;dialogue &quot;&quot; 
 &quot;【Attraction +0】【AI Dependence +5】&quot;
-&quot;-&gt;Act1_3_8&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="73" name="Menu" tags="" position="700,50" size="100,100">&lt;&lt;bg &quot;你的背景图链接&quot;&gt;&gt;
+&quot;-&gt;Act1_3_8&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="72" name="Menu" tags="" position="700,50" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/background.png&quot;&gt;&gt;
 
 &lt;div class=&quot;intro-screen&quot;&gt;
-    &lt;div class=&quot;intro-title&quot;&gt;ABOUT THIS STORY&lt;/div&gt;
+    &lt;h1&gt;ABOUT THIS STORY&lt;/h1&gt;
 
-    &lt;div class=&quot;intro-text&quot;&gt;
-        This is a journey written by you.&lt;br&gt;
-        Every reply, every moment of hesitation, shifts two key values:&lt;br&gt;&lt;br&gt;
-        &lt;b&gt;【AI Dependence】&lt;/b&gt; your trust in the algorithm.&lt;br&gt;
-        &lt;b&gt;【Attraction】&lt;/b&gt; the emotional charge within a complicated relationship.&lt;br&gt;&lt;br&gt;
-    &lt;/div&gt;
-
-    &lt;&lt;link &quot;Continue&quot;&gt;&gt;
-        &lt;&lt;goto &quot;Menu2&quot;&gt;&gt;
-    &lt;&lt;/link&gt;&gt;
+    This is a journey written by you.&lt;br&gt;
+    Every reply, every moment of hesitation, shifts two key values:&lt;br&gt;
+    &lt;b&gt;【AI Dependence】&lt;/b&gt; your trust in the algorithm.&lt;br&gt;
+    &lt;b&gt;【Attraction】&lt;/b&gt; the emotional charge within a complicated relationship.
 &lt;/div&gt;
 
-</tw-passagedata><tw-passagedata pid="74" name="Act2_1_2" tags="" position="1325,300" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+&lt;div class=&quot;title-screen&quot;&gt;
+    &lt;a class=&quot;main-button&quot; data-passage=&quot;Menu2&quot;&gt;Continue&lt;/a&gt;
+&lt;/div&gt;</tw-passagedata><tw-passagedata pid="73" name="Act2_1_2" tags="" position="1325,300" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
@@ -1546,7 +1411,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;Morning. Sleep duration: 08:06:29. Weather: sunny, 80°F. &lt;br&gt;Today: your third date with Machel.Breakfast prepared.&quot;
     &quot;-&gt;Act2_1_3&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="75" name="Act2_2_1" tags="" position="1500,200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="74" name="Act2_2_1" tags="" position="1500,200" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1559,7 +1424,7 @@ width:&quot;380px&quot;,
     &quot;You head out. &lt;br&gt;On the bridge, people jog, boats drift by.&quot;
     &quot;You sigh, then see him. Michael.&quot;
     &quot;-&gt;Act2_2_2&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="76" name="Act2_1_3" tags="" position="1325,375" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="75" name="Act2_1_3" tags="" position="1325,375" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1571,7 +1436,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;You&quot;
     &quot;…Alright. Thanks, Chef.&quot;
     &quot;-&gt;Act2_1_4&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="77" name="Act2_1_4" tags="" position="1325,450" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="76" name="Act2_1_4" tags="" position="1325,450" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1580,7 +1445,7 @@ width:&quot;380px&quot;,
 
 &lt;&lt;dialogue &quot;&quot;
     &quot;The wardrobe interface opens. &lt;br&gt;You’re already wearing a hoodie and sweatpants.&quot;-&gt;Act2_1_5&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="78" name="Act2_choice1_A" tags="" position="1425,850" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="77" name="Act2_choice1_A" tags="" position="1425,850" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1590,7 +1455,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;&quot;
     &quot;【Attraction +0】【AI dependence +10】&quot;
   &quot;-&gt;Act2_choice1_A_1&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="79" name="Act2_1_5" tags="" position="1325,525" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="78" name="Act2_1_5" tags="" position="1325,525" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
@@ -1602,7 +1467,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;Today’s activity: riverside walk. &lt;br&gt;Casual outfit selected.&quot;
     &quot;-&gt;Act2_1_6&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="80" name="Act2_choice1_A_1" tags="" position="1450,850" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="79" name="Act2_choice1_A_1" tags="" position="1450,850" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
@@ -1615,7 +1480,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;Your day will be smoother.&quot;
     &quot;-&gt;Act2_1_12&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="81" name="Act2_1_6" tags="" position="1325,600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="80" name="Act2_1_6" tags="" position="1325,600" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1627,7 +1492,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;&quot;
     &quot;You glance at the mirror. Sunglasses, cap, calculated chill.&quot;
  &quot;-&gt;Act2_1_7&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="82" name="Act2_1_7" tags="" position="1325,650" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="81" name="Act2_1_7" tags="" position="1325,650" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1639,7 +1504,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;You&quot;
     &quot;This feels… rehearsed formally. &lt;br&gt;Am I auditioning for something?&quot;
   &quot;-&gt;Act2_1_8&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="83" name="Act2_1_8" tags="" position="1325,725" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="82" name="Act2_1_8" tags="" position="1325,725" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra&quot;&gt;&gt;
@@ -1649,7 +1514,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;The outfit is casual, not formal.&quot;
   &quot;-&gt;Act2_1_9&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="84" name="Act2_1_9" tags="" position="1325,775" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="83" name="Act2_1_9" tags="" position="1325,775" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_bed.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1661,7 +1526,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;You&quot;
     &quot;That’s not what I meant.&lt;br&gt;You arrange everything. I feel like a puppet.&quot;
  &quot;-&gt;Act2_1_10&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="85" name="Act2_1_11" tags="" position="1325,900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="84" name="Act2_1_11" tags="" position="1325,900" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1677,7 +1542,7 @@ width:&quot;380px&quot;,
     &quot;Let it keep doing its thing. &quot; 0 10 &quot;Act1_choice2_B_1&quot;
      &quot;Ask it to dial down&quot; 0 -10 &quot;Act1_choice2_D_1&quot;
 &gt;&gt;
-</tw-passagedata><tw-passagedata pid="86" name="Act_2_2_2" tags="" position="1500,275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="85" name="Act_2_2_2" tags="" position="1500,275" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
 
 &lt;&lt;leftChar &quot;Michael_hoodie_normal&quot;&gt;&gt;
 &lt;&lt;run $(&quot;#char-left&quot;).css({
@@ -1689,7 +1554,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Michael&quot;
     &quot;Hey. It’s so bright today. I thought you might bail.&quot;
    &quot;-&gt;Act2_2_3&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="87" name="Act2_2_3" tags="" position="1500,350" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="86" name="Act2_2_3" tags="" position="1500,350" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1701,7 +1566,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;You&quot;
     &quot;Hey!!I wouldn’t! &quot;
   &quot;-&gt;Act2_2_4&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="88" name="Act2_1_10" tags="" position="1325,825" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="87" name="Act2_1_10" tags="" position="1325,825" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
@@ -1713,7 +1578,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;You still make core decisions.&lt;br&gt;I optimize the rest.&quot;
     &quot;-&gt;Act2_1_11&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="89" name="Act2_2_4" tags="" position="1500,400" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="88" name="Act2_2_4" tags="" position="1500,400" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_earphone&quot;&gt;&gt;
@@ -1729,7 +1594,7 @@ width:&quot;380px&quot;,
 
 &lt;&lt;choices
     &quot;Follow Astra &quot; 0 10 &quot;Act2_2_5&quot;
-&gt;&gt;</tw-passagedata><tw-passagedata pid="90" name="Act2_choice1_B" tags="" position="1425,950" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+&gt;&gt;</tw-passagedata><tw-passagedata pid="89" name="Act2_choice1_B" tags="" position="1425,950" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;&quot;&gt;&gt;
@@ -1739,7 +1604,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;&quot;
     &quot;【Attraction +0】【AI dependence -10】&quot;
   &quot;-&gt;Act2_choice1_B_1&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="91" name="Act2_choice1_B_1" tags="" position="1450,950" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="90" name="Act2_choice1_B_1" tags="" position="1450,950" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
@@ -1752,7 +1617,7 @@ width:&quot;380px&quot;,
 &lt;&lt;dialogue &quot;Astra&quot;
     &quot;Intervention reduced to 70%.&quot;
     &quot;-&gt;Act2_1_12&quot;&gt;&gt;
-</tw-passagedata><tw-passagedata pid="92" name="Act2_2_7" tags="" position="1500,600" size="100,100"></tw-passagedata><tw-passagedata pid="93" name="Act2_2_5" tags="" position="1500,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
+</tw-passagedata><tw-passagedata pid="91" name="Act2_2_7" tags="" position="1500,600" size="100,100"></tw-passagedata><tw-passagedata pid="92" name="Act2_2_5" tags="" position="1500,475" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/riverside.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_earphone&quot;&gt;&gt;
@@ -1768,35 +1633,58 @@ width:&quot;380px&quot;,
 
 &lt;&lt;choices
     &quot;Follow Astra &quot; 0 10 &quot;Act2_2_5&quot;
-&gt;&gt;</tw-passagedata><tw-passagedata pid="94" name="Act2_2_6" tags="" position="1500,550" size="100,100"></tw-passagedata><tw-passagedata pid="95" name="Act2_2_8" tags="" position="1500,675" size="100,100"></tw-passagedata><tw-passagedata pid="96" name="Act2_2_9" tags="" position="1500,725" size="100,100"></tw-passagedata><tw-passagedata pid="97" name="Act2_2_10" tags="" position="1500,800" size="100,100"></tw-passagedata><tw-passagedata pid="98" name="Act2_2_15" tags="" position="1500,1050" size="100,100"></tw-passagedata><tw-passagedata pid="99" name="Act2_2_12" tags="" position="1500,900" size="100,100"></tw-passagedata><tw-passagedata pid="100" name="Act2_2_11" tags="" position="1500,850" size="100,100"></tw-passagedata><tw-passagedata pid="101" name="Act2_2_13" tags="" position="1500,950" size="100,100"></tw-passagedata><tw-passagedata pid="102" name="Act2_2_16" tags="" position="1500,1100" size="100,100"></tw-passagedata><tw-passagedata pid="103" name="Act2_2_14" tags="" position="1500,1000" size="100,100"></tw-passagedata><tw-passagedata pid="104" name="Act1_choice1_C_1" tags="" position="825,800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
+&gt;&gt;</tw-passagedata><tw-passagedata pid="93" name="Act2_2_6" tags="" position="1500,550" size="100,100"></tw-passagedata><tw-passagedata pid="94" name="Act2_2_8" tags="" position="1500,675" size="100,100"></tw-passagedata><tw-passagedata pid="95" name="Act2_2_9" tags="" position="1500,725" size="100,100"></tw-passagedata><tw-passagedata pid="96" name="Act2_2_10" tags="" position="1500,800" size="100,100"></tw-passagedata><tw-passagedata pid="97" name="Act2_2_15" tags="" position="1500,1050" size="100,100"></tw-passagedata><tw-passagedata pid="98" name="Act2_2_12" tags="" position="1500,900" size="100,100"></tw-passagedata><tw-passagedata pid="99" name="Act2_2_11" tags="" position="1500,850" size="100,100"></tw-passagedata><tw-passagedata pid="100" name="Act2_2_13" tags="" position="1500,950" size="100,100"></tw-passagedata><tw-passagedata pid="101" name="Act2_2_16" tags="" position="1500,1100" size="100,100"></tw-passagedata><tw-passagedata pid="102" name="Act2_2_14" tags="" position="1500,1000" size="100,100"></tw-passagedata><tw-passagedata pid="103" name="Act1_choice1_C_1" tags="story" position="825,800" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/bedroom_closet.png&quot;&gt;&gt;
 
 
 &lt;&lt;leftChar &quot;Astra_phone&quot;&gt;&gt;
 
-&lt;&lt;rightChar &quot;&quot;&gt;&gt;
-
-
-
 &lt;&lt;dialogue &quot;Astra&quot;
 &quot;“Match compatibility decreased by 11%.”&quot;
  &quot;-&gt;Act1_1_7&quot;&gt;&gt;
- </tw-passagedata><tw-passagedata pid="105" name="Menu2" tags="" position="775,50" size="100,100">&lt;&lt;bg &quot;你的背景图链接&quot;&gt;&gt;
+ </tw-passagedata><tw-passagedata pid="104" name="Menu2" tags="" position="775,50" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/background.png&quot;&gt;&gt;
 
 &lt;div class=&quot;intro-screen&quot;&gt;
     &lt;div class=&quot;intro-title&quot;&gt;ABOUT THIS STORY&lt;/div&gt;
 
     &lt;div class=&quot;intro-text&quot;&gt;
        These changes will alter how the story ends.&lt;br&gt;
-       The Sidebar on the left will track these values in real time.&lt;br&gt;&lt;br&gt;
+       The Sidebar on the left will track these values in real time.&lt;br&gt;
 
         Pay attention to every choice you make.&lt;br&gt;
         You’re defining a story that belongs to you.
     &lt;/div&gt;
- &lt;&lt;link &quot;Continue&quot;&gt;&gt;
-        &lt;&lt;goto &quot;Act1_start&quot;&gt;&gt;
-    &lt;&lt;/link&gt;&gt;
-&lt;/div&gt;
 
+&lt;div class=&quot;title-screen&quot;&gt;
+    &lt;a class=&quot;main-button&quot; data-passage=&quot;Menu3&quot;&gt;Continue&lt;/a&gt;
+&lt;/div&gt;
+</tw-passagedata><tw-passagedata pid="105" name="Menu3" tags="" position="850,50" size="100,100">&lt;&lt;bg &quot;https://raw.githubusercontent.com/luckyone0777/tension_pics/main/img/background.png&quot;&gt;&gt;
+
+&lt;div class=&quot;intro-screen&quot;&gt;
+    &lt;div class=&quot;intro-title&quot;&gt;What&#39;s your name?&lt;/div&gt;
+
+    &lt;div class=&quot;intro-text&quot;&gt;
+        Enter the name you’d like to use in the story.
+    &lt;/div&gt;
+
+    &lt;&lt;textbox &quot;$playerName&quot; &quot;&quot;&gt;&gt;
+
+    &lt;br&gt;&lt;br&gt;
+
+&lt;div class=&quot;title-screen&quot;&gt;
+    &lt;a class=&quot;main-button&quot; data-passage=&quot;Act1_start&quot;&gt;Continue&lt;/a&gt;
+&lt;/div&gt;
+</tw-passagedata><tw-passagedata pid="106" name="PassageFooter" tags="" position="375,375" size="100,100">&lt;&lt;if tags().includes(&quot;story&quot;)&gt;&gt;
+&lt;div class=&quot;scoreboard&quot;&gt;
+  &lt;div class=&quot;score-item&quot;&gt;
+    &lt;span class=&quot;score-label&quot;&gt;AI Dependence&lt;/span&gt;
+    &lt;span class=&quot;score-value&quot;&gt;&lt;&lt;print $AIdep&gt;&gt;&lt;/span&gt;
+  &lt;/div&gt;
+  &lt;div class=&quot;score-item&quot;&gt;
+    &lt;span class=&quot;score-label&quot;&gt;Attraction&lt;/span&gt;
+    &lt;span class=&quot;score-value&quot;&gt;&lt;&lt;print $attraction&gt;&gt;&lt;/span&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+&lt;&lt;/if&gt;&gt;
 </tw-passagedata></tw-storydata>
 	<script id="script-sugarcube" type="text/javascript">
 	/*! SugarCube JS */
